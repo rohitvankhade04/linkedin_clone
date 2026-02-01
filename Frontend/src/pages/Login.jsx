@@ -2,6 +2,7 @@ import React, { useState ,useContext} from 'react'
 import { useNavigate} from 'react-router-dom'
 import { authDataContext } from '../context/AuthContext';
 import axios from "axios";
+import { userDataContext } from '../context/userContext';
 
 function Login() {
  const[show,setShow]=useState(false);
@@ -9,6 +10,7 @@ function Login() {
   const navigate=useNavigate();
   const[loading,setLoading]=useState(false);
   let[err,setError]=useState("");
+  let{userData,setUserData}=useContext(userDataContext)
 
   let[email,setEmail]=useState("")
   let[password,setPassword]=useState("")
@@ -24,6 +26,9 @@ function Login() {
         password
       },{withCredentials:true})
       console.log(result)
+      navigate("/")
+      setUserData(result)
+
       setLoading((e)=>!e);
       setError("");
       
@@ -38,7 +43,7 @@ function Login() {
   return (
     <div className='w-full h-screen bg-white relative'>
       <div className='absolute top-3 left-6 w-[100px] '>
-        <img src="https://1000logos.net/wp-content/uploads/2023/01/LinkedIn-logo.png" atl="Linkedin" />
+        <img src="https://1000logos.net/wp-content/uploads/2023/01/LinkedIn-logo.png" alt="Linkedin" />
       </div>
       <div className='flex items-center justify-center h-full pt-10 '>
         <form className='w-[90%] max-w-[400px] h-[600px] shadow-2xl flex flex-col  justify-center gap-[10px] p-[15px]' onSubmit={handleSignIn}>
