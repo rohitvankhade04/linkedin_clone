@@ -64,6 +64,7 @@ const login=async (req,res)=>{
 
         })
        console.log("cookie is also set")
+       console.log("login successfull!!")
         return res.status(200).json(user)
     } catch (error) {
         console.log("login has failed")
