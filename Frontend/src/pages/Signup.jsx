@@ -9,7 +9,7 @@ function Signup() {
   const navigate=useNavigate();
   const[loading,setLoading]=useState(false);
   let[err,setError]=useState("");
-  let{userData,setUSerData}=useContext(userDataContext)
+  let{userData,setUserData}=useContext(userDataContext)
 
   let[firstName,setFirstName]=useState("")
   let[lastName,setLastName]=useState("")
@@ -31,7 +31,8 @@ function Signup() {
       },{withCredentials:true})
       console.log(result)
       navigate("/")
-      setUSerData(result)
+      setUserData(result)
+      console.log("user data is set when we land on the page and a request is semt to current user route and we get userdata in response to the token we get from signup controller")
       setLoading((e)=>!e);
       setError("");
       setFirstName("")
@@ -40,6 +41,7 @@ function Signup() {
       setUserName("")
       setPassword("")
     } catch (error) {
+      console.log("error aayaaaaaa");;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       setError(error.response.data.message)
       setLoading((e)=>!e);
 
