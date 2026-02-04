@@ -4,6 +4,7 @@ import { IoIosSearch } from "react-icons/io";
 import { IoHome } from "react-icons/io5";
 import { FaUsers } from "react-icons/fa6";
 import { IoNotifications } from "react-icons/io5";
+
 import userdp2 from "../assets/userdp2.png"
 import { userDataContext } from '../context/UserContext';
 import { authDataContext } from '../context/AuthContext';
@@ -27,7 +28,7 @@ function Nav() {
       }
     }
   return (
-    <div className='w-full h-[60px] bg-[white] fixed top-0 shadow-lg flex items-center justify-between md:justify-around px-[10px] '>
+    <div className='w-full h-[60px] bg-[white] fixed top-0 shadow-lg flex items-center justify-between md:justify-around px-[10px] z-[50] '>
       <div className=' flex items-center justify-center gap-[10px]'>
             <div>
             <img src={logo2} className='w-[50px]' onClick={()=>{setActiveScearch(false)}}></img>

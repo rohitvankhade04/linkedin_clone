@@ -2,8 +2,11 @@ import axios from 'axios';
 import { authDataContext } from './AuthContext';
 import React, { createContext,useState,useContext, useEffect } from 'react'
 export const userDataContext=createContext();
+
 function UserContext({children}) {
     let[userData,setUserData]=useState(null);
+   let[edit,setEdit]=useState(false);
+
     const {serverUrl}=useContext(authDataContext)
     const getCurrentUser=async ()=>{
      try {
@@ -21,7 +24,7 @@ function UserContext({children}) {
         getCurrentUser()
     },[])
 
-    const value={userData,setUserData}
+    const value={userData,setUserData,edit,setEdit}
 
    return (
     <div>

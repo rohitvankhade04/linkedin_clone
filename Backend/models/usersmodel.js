@@ -35,7 +35,7 @@ const userSchema=new mongoose.Schema({
     degree:{type:String},
     specification:{type:String}
     }],
-    location:{type:String},
+    location:{type:String,default:"India"},
     gender:{type:String,
         enum:["male","female","others"]
     },
