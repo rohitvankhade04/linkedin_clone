@@ -12,3 +12,16 @@ export const getCurrentUser =async (req,res)=>{
         return res.status(400).json({message:"get current user error"})
     }
 }
+
+
+
+
+
+
+
+
+
+
+export const updateProfile= async (req,res)=>{
+  
+} 

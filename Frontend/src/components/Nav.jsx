@@ -28,7 +28,7 @@ function Nav() {
       }
     }
   return (
-    <div className='w-full h-[60px] bg-[white] fixed top-0 shadow-lg flex items-center justify-between md:justify-around px-[10px] z-[50] '>
+    <div className='w-full h-[60px] bg-[white] fixed top-0 shadow-lg flex items-center justify-between md:justify-around px-[10px] z-[50] left-0 '>
       <div className=' flex items-center justify-center gap-[10px]'>
             <div>
             <img src={logo2} className='w-[50px]' onClick={()=>{setActiveScearch(false)}}></img>

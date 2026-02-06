@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState,useRef} from 'react';
 import { RxCrossCircled } from "react-icons/rx";
 import { userDataContext } from '../context/UserContext';
 import userdp2 from "../assets/userdp2.png"
@@ -16,13 +16,28 @@ function EditProfile() {
   let [gender, setGender] = useState(userData.gender || "")
   let [skills, setSkills] = useState(userData.skills || [])
   let [newSkills, setNewSkills] = useState("")
-  let [education, setEducation] = useState(userData.skills || [])
+  let [education, setEducation] = useState(userData.education || [])
   let [newEducation, setNewEducation] = useState({
     college: "",
     degree: "",
     specification: ""
   })
+  let [experience, setExperience] = useState(userData.experience || [])
+  let [newExperience, setNewExperience] = useState({
+    title: "",
+    company: "",
+    description: ""
+  })
+  let [frontendProfileImage,setFrontendProfileImage]=useState(userData.profileImage || dp)
+  let [backendProfileImage,setBackendProfileImage]=useState(null)
+  let [frontendCoverImage,setFrontendCoverImage]=useState(userData.coverImage || dp)
+  let [backendCoverImage,setBackendCoverImage]=useState(null)
 
+
+  const profileImage=useRef()
+  const coverImage=useRef()
+//  ---------------------------------imports and States ends here----------------------------------
+// ------------------------------------functions starts here------------------------------------------
 
   function addSkill(e) {
     e.preventDefault()
@@ -58,21 +73,54 @@ function EditProfile() {
 
   }
 
+  function addExperience(e) {
+    e.preventDefault();
+    if (newExperience.title && newExperience.company && newExperience.description) {
+      setExperience([...experience, newExperience])
+    }
+    setNewExperience({
+      title: "",
+      company: "",
+      description: ""
+    })
+
+  }
+  function clearExperience(exp) {
+    if (experience.includes(exp)) {
+      setExperience(education.filter((s) => s !== exp))
+
+    }
+
+  }
+
+  function handleCoverImage(){
+
+    
+  }
+  function handleProfileImage(){
+
+
+  }
+
+// ------------------------------------functions ends here------------------------------------------
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
-
+      {/* -------------image taking front front end--------- */}
+      <input type='file' accept="image/*" hidden ref={profileImage} onChange={handleProfileImage} />
+      <input type='file' accept="image/*" hidden ref={coverImage} onChange={handleCoverImage}/>
+      {/* -------------image taking front front end--------- */}
 
       <div className="absolute inset-0 bg-black opacity-50" onClick={() => { setEdit(false) }}></div>
 
 
       <div className="relative z-[200] w-[400px] h-[600px] bg-white rounded-lg shadow-lg px-[16px] overflow-auto">
         <RxCrossCircled className="absolute top-[5px] right-[5px] w-[20px] h-[20px] text-gray-600 cursor-pointer " onClick={() => { setEdit(false) }} />
-        <div className='w-full h-[150px] bg-gray-500 rounded-lg mt-[30px]'>
-          <img src='' alt="" className='w-full'></img>
+        <div className='w-full h-[150px] bg-gray-500 rounded-lg mt-[30px] cursor-pointer' onClick={()=>coverImage.current.click()}>
+          <img src={userData.coverImage || null} alt="" className='w-full'></img>
           <IoCameraOutline className='absolute right-[18px] top-[35px] h-[22px] w-[22px]  cursor-pointer text-white' />
 
         </div>
-        <div className=' w-[80px] h-[80px] rounded-full overflow-hidden items-center justify-center relative left-[30px] top-[-45px] cursor-pointer' onClick={() => { setEdit(true) }}>
+        <div className=' w-[80px] h-[80px] rounded-full overflow-hidden items-center justify-center relative left-[30px] top-[-45px] cursor-pointer' onClick={()=>profileImage.current.click()}>
           <img src={userdp2} className='h-full bg-transparent'></img>
         </div>
         <div className='w-[15px] h-[15px] bg-blue-400 absolute top-[180px] left-[109px] rounded-full flex items-center justify-center'>
@@ -104,7 +152,7 @@ function EditProfile() {
 
           <div className='w-full min-h-[50px] p-[10px] border rounded-lg border-gray-600 flex flex-col gap-[3px]'>
             <h1 className='text-[19px] font-semibold'>Education</h1>
-            {education && <div className=' flex flex-col gap-[8px] p-[10px]'> {education.map((edu, index) => (
+            {education && <div className='  flex flex-col gap-[8px] p-[10px]'> {education.map((edu, index) => (
               <div key={index + 1} className='w-full min-h-[40px] border border-gray-600 bg-gray-200 rounded-lg shadow-lg px-2 flex items-center justify-between py-[10px]'>
 
                 <div>
@@ -113,7 +161,7 @@ function EditProfile() {
                   <div>Specification:{edu.specification}</div>
                 </div>
 
-                <RxCrossCircled className="w-[20px] h-[20px] text-gray-600 cursor-pointer " onClick={()=>{clearEducation(edu)}}/>
+                <RxCrossCircled className="w-[20px] h-[20px] text-gray-600 cursor-pointer " onClick={() => { clearEducation(edu) }} />
               </div>))}</div>}
             <div className='flex  flex-col items-start justify-center gap-[10px] '>
               <input type='text' placeholder='college' value={newEducation.college} onChange={(e) => setNewEducation({ ...newEducation, college: e.target.value })} className=' px-[10px] py-[5px] border outline-none rounded-lg border-gray-600 text-[18px] w-full' />
@@ -122,6 +170,32 @@ function EditProfile() {
               <button className=' w-[60px] h-[40px] ml-[130px] bg-blue-400 text-white rounded-md shadow-lg border border-gray-700' onClick={addEducation}>Add</button>
             </div>
           </div>
+
+
+
+
+          <div className='w-full min-h-[50px] p-[10px] border rounded-lg border-gray-600 flex flex-col gap-[3px]'>
+            <h1 className='text-[19px] font-semibold'>Experience</h1>
+            {experience && <div className='  flex flex-col gap-[8px] p-[10px]'> {experience.map((exp, index) => (
+              <div key={index + 1} className='w-full min-h-[40px] border border-gray-600 bg-gray-200 rounded-lg shadow-lg px-2 flex items-center justify-between py-[10px]'>
+
+                <div>
+                  <div>Title:{exp.title}</div>
+                  <div>Company:{exp.company}</div>
+                  <div>Description:{exp.description}</div>
+                </div>
+
+                <RxCrossCircled className="w-[20px] h-[20px] text-gray-600 cursor-pointer " onClick={() => { clearExperience(exp) }} />
+              </div>))}</div>}
+            <div className='flex  flex-col items-start justify-center gap-[10px] '>
+              <input type='text' placeholder='title' value={newExperience.title} onChange={(e) => setNewExperience({ ...newExperience, title: e.target.value })} className=' px-[10px] py-[5px] border outline-none rounded-lg border-gray-600 text-[18px] w-full' />
+              <input type='text' placeholder='company' value={newExperience.company} onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })} className=' px-[10px] py-[5px] border outline-none rounded-lg border-gray-600 text-[18px] w-full' />
+              <input type='text' placeholder='description' value={newExperience.description} onChange={(e) => setNewExperience({ ...newExperience, description: e.target.value })} className=' px-[10px] py-[5px] border outline-none rounded-lg border-gray-600 text-[18px] w-full' />
+              <button className=' w-[60px] h-[40px] ml-[130px] bg-blue-400 text-white rounded-md shadow-lg border border-gray-700' onClick={addExperience}>Add</button>
+            </div>
+          </div>
+
+          <button className='bg-blue-500  h-[50px] rounded-full w-[100%] mt-[40px] text-white'> Save Profile</button>
         </div>
       </div>
 
