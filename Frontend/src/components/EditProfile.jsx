@@ -4,14 +4,17 @@ import { userDataContext } from '../context/UserContext';
 import userdp2 from "../assets/userdp2.png"
 import { FaPlus } from "react-icons/fa6";
 import { IoCameraOutline } from "react-icons/io5";
+import axios from 'axios';
+import { authDataContext } from '../context/AuthContext';
 
 
 function EditProfile() {
   let { edit, setEdit, userData, setUserData } = useContext(userDataContext)
+  let{serverUrl}=useContext(authDataContext)
   let [firstName, setFirstName] = useState(userData.firstName || "")
   let [lastName, setLastName] = useState(userData.lastName || "")
   let [userName, setUserName] = useState(userData.userName || "")
-  let [loaction, setLocation] = useState(userData.location || "")
+  let [location, setLocation] = useState(userData.location || "")
   let [headline, setHeadline] = useState(userData.headline || "")
   let [gender, setGender] = useState(userData.gender || "")
   let [skills, setSkills] = useState(userData.skills || [])
@@ -28,9 +31,9 @@ function EditProfile() {
     company: "",
     description: ""
   })
-  let [frontendProfileImage,setFrontendProfileImage]=useState(userData.profileImage || dp)
+  let [frontendProfileImage,setFrontendProfileImage]=useState(userData.profileImage || userdp2)
   let [backendProfileImage,setBackendProfileImage]=useState(null)
-  let [frontendCoverImage,setFrontendCoverImage]=useState(userData.coverImage || dp)
+  let [frontendCoverImage,setFrontendCoverImage]=useState(userData.coverImage || null)
   let [backendCoverImage,setBackendCoverImage]=useState(null)
 
 
@@ -93,13 +96,44 @@ function EditProfile() {
 
   }
 
-  function handleCoverImage(){
+  function handleCoverImage(e){
+    let file=e.target.files[0]
+    setBackendCoverImage(file)
+    setFrontendCoverImage(URL.createObjectURL(file))
 
     
   }
-  function handleProfileImage(){
+  function handleProfileImage(e){
+    let file=e.target.files[0]
+    setBackendProfileImage(file)
+    setFrontendProfileImage(URL.createObjectURL(file))
+  }
 
 
+  const handleSaveProfile=async ()=>{
+    try {
+      let formdata=new FormData()
+      formdata.append("firstName",firstName)
+      formdata.append("lastName",lastName)
+      formdata.append("userName",userName)
+      formdata.append("headline",headline)
+      formdata.append("location",location)
+      formdata.append("skills",skills)
+      formdata.append("education",education)
+      formdata.append("experience",experience)
+      if(backendProfileImage){
+        formdata.append("profileImage",backendProfileImage)
+      }
+      if(backendCoverImage){
+        formdata.append("coverImage",backendCoverImage)
+      }
+      
+      let result =await axios.put(serverUrl="/api/user/updateProfile",formdata,{withCredentials:true})
+      console.log(result)
+    } catch (error) {
+      console.log(error);
+      
+    }
   }
 
 // ------------------------------------functions ends here------------------------------------------
@@ -115,15 +149,15 @@ function EditProfile() {
 
       <div className="relative z-[200] w-[400px] h-[600px] bg-white rounded-lg shadow-lg px-[16px] overflow-auto">
         <RxCrossCircled className="absolute top-[5px] right-[5px] w-[20px] h-[20px] text-gray-600 cursor-pointer " onClick={() => { setEdit(false) }} />
-        <div className='w-full h-[150px] bg-gray-500 rounded-lg mt-[30px] cursor-pointer' onClick={()=>coverImage.current.click()}>
-          <img src={userData.coverImage || null} alt="" className='w-full'></img>
+        <div className='w-full h-[150px] bg-gray-500 rounded-lg mt-[30px] cursor-pointer overflow-hidden' onClick={()=>coverImage.current.click()}>
+          <img src={frontendCoverImage} alt="" className='w-full'></img>
           <IoCameraOutline className='absolute right-[18px] top-[35px] h-[22px] w-[22px]  cursor-pointer text-white' />
 
         </div>
         <div className=' w-[80px] h-[80px] rounded-full overflow-hidden items-center justify-center relative left-[30px] top-[-45px] cursor-pointer' onClick={()=>profileImage.current.click()}>
-          <img src={userdp2} className='h-full bg-transparent'></img>
+          <img src={frontendProfileImage} className='h-full bg-transparent'></img>
         </div>
-        <div className='w-[15px] h-[15px] bg-blue-400 absolute top-[180px] left-[109px] rounded-full flex items-center justify-center'>
+        <div className='w-[15px] h-[15px] bg-blue-400 absolute top-[182px] left-[115px] rounded-full flex items-center justify-center'>
           <FaPlus className='text-white cursor-pointer' onClick={() => { setEdit(true) }} />
         </div>
         <div className='w-full flex flex-col justify-center items-center gap-[10px] mb-[20px] '>
@@ -195,7 +229,7 @@ function EditProfile() {
             </div>
           </div>
 
-          <button className='bg-blue-500  h-[50px] rounded-full w-[100%] mt-[40px] text-white'> Save Profile</button>
+          <button className='bg-blue-500  h-[50px] rounded-full w-[100%] mt-[40px] text-white' onClick={handleSaveProfile}> Save Profile</button>
         </div>
       </div>
 
