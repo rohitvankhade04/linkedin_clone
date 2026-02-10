@@ -1,8 +1,8 @@
 import React, { useState ,useContext} from 'react'
 import { useNavigate} from 'react-router-dom'
-import { authDataContext } from '../context/AuthContext';
+import { authDataContext } from '../context/AuthContext.jsx';
 import axios from "axios";
-import { userDataContext } from '../context/userContext';
+import { userDataContext } from '../context/UserContext.jsx';
 function Signup() {
   const[show,setShow]=useState(false);
   const {serverUrl}=useContext(authDataContext)

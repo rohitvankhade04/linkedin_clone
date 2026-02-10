@@ -33,9 +33,9 @@ function EditProfile() {
   })
   let [frontendProfileImage,setFrontendProfileImage]=useState(userData.profileImage || userdp2)
   let [backendProfileImage,setBackendProfileImage]=useState(null)
-  let [frontendCoverImage,setFrontendCoverImage]=useState(userData.coverImage || null)
+  let [frontendCoverImage,setFrontendCoverImage]=useState(userData.coverImage || userdp2)
   let [backendCoverImage,setBackendCoverImage]=useState(null)
-
+  let [saving,setSaving]=useState(false)
 
   const profileImage=useRef()
   const coverImage=useRef()
@@ -90,7 +90,7 @@ function EditProfile() {
   }
   function clearExperience(exp) {
     if (experience.includes(exp)) {
-      setExperience(education.filter((s) => s !== exp))
+      setExperience(experience.filter((s) => s !== exp))
 
     }
 
@@ -111,6 +111,7 @@ function EditProfile() {
 
 
   const handleSaveProfile=async ()=>{
+    setSaving(true);
     try {
       let formdata=new FormData()
       formdata.append("firstName",firstName)
@@ -118,9 +119,10 @@ function EditProfile() {
       formdata.append("userName",userName)
       formdata.append("headline",headline)
       formdata.append("location",location)
-      formdata.append("skills",skills)
-      formdata.append("education",education)
-      formdata.append("experience",experience)
+      formdata.append("gender", gender)
+      formdata.append("skills",JSON.stringify(skills))
+      formdata.append("education",JSON.stringify(education))
+      formdata.append("experience",JSON.stringify(experience))
       if(backendProfileImage){
         formdata.append("profileImage",backendProfileImage)
       }
@@ -128,10 +130,17 @@ function EditProfile() {
         formdata.append("coverImage",backendCoverImage)
       }
       
-      let result =await axios.put(serverUrl="/api/user/updateProfile",formdata,{withCredentials:true})
+      let result =await axios.put(serverUrl+"/api/user/updateProfile",formdata,{withCredentials:true})
       console.log(result)
+      let message="profile updated"
+      setUserData(result.data)
+      setSaving(false)
+      setEdit(false)
+
+      
     } catch (error) {
       console.log(error);
+      setSaving(false)
       
     }
   }
@@ -165,7 +174,7 @@ function EditProfile() {
           < input type="text" placeholder="lastName" className='w-full h-[50px] outline-none border-gray-600 px-[10px] py-[5px] text-[18px] border rounded-lg' value={lastName} onChange={e => setLastName(e.target.value)} />
           < input type="text" placeholder="userName" className='w-full h-[50px] outline-none border-gray-600 px-[10px] py-[5px] text-[18px] border rounded-lg' value={userName} onChange={e => setUserName(e.target.value)} />
           < input type="text" placeholder="headline" className='w-full h-[50px] outline-none border-gray-600 px-[10px] py-[5px] text-[18px] border rounded-lg' value={headline} onChange={e => setHeadline(e.target.value)} />
-          < input type="text" placeholder="location" className='w-full h-[50px] outline-none border-gray-600 px-[10px] py-[5px] text-[18px] border rounded-lg' value={loaction} onChange={e => setLocation(e.target.value)} />
+          < input type="text" placeholder="location" className='w-full h-[50px] outline-none border-gray-600 px-[10px] py-[5px] text-[18px] border rounded-lg' value={location} onChange={e => setLocation(e.target.value)} />
           < input type="text" placeholder="gender(male/female/others)" className='w-full h-[50px] outline-none border-gray-600 px-[10px] py-[5px] text-[18px] border rounded-lg' value={gender} onChange={e => setGender(e.target.value)} />
 
 
@@ -229,7 +238,7 @@ function EditProfile() {
             </div>
           </div>
 
-          <button className='bg-blue-500  h-[50px] rounded-full w-[100%] mt-[40px] text-white' onClick={handleSaveProfile}> Save Profile</button>
+          <button className='bg-blue-500  h-[50px] rounded-full w-[100%] mt-[40px] text-white'  disabled={saving} onClick={handleSaveProfile} > {saving ?"saving...":"Save Profile"}</button>
         </div>
       </div>
 
