@@ -3,6 +3,7 @@ import Nav from '../components/nav';
 import userdp2 from "../assets/userdp2.png"
 import { RxCrossCircled } from "react-icons/rx";
 import { FaRegImage } from "react-icons/fa6";
+import axios from 'axios';
 
 import { FaPlus } from "react-icons/fa6";
 import { IoCameraOutline } from "react-icons/io5";
@@ -10,14 +11,19 @@ import { HiPencil } from "react-icons/hi2";
 import { userDataContext } from '../context/UserContext';
 import EditProfile from '../components/EditProfile.jsx';
 import { useRef } from 'react';
+import { authDataContext } from '../context/AuthContext.jsx';
+import Post from '../components/Post.jsx';
 
 
 
 function Home() {
-  let { userData, setUserData, edit, setEdit } = useContext(userDataContext);
+  let { userData, setUserData, edit, setEdit,postData,setPostData } = useContext(userDataContext);
   let [frontendImage, setFrontendImage] = useState("");
   let [backendImage, setBackendImage] = useState("");
-  let [createPost, setCreatePost] = useState(false);
+  let [createPostBox, setCreatePostBox] = useState(false);
+  let [description, setdescription] = useState("");
+  let {serverUrl} = useContext(authDataContext);
+  let[posting,setPosting]=useState(false)
 
 
   let image = useRef();
@@ -29,6 +35,35 @@ function Home() {
 
   }
 
+  async function handleUploadPost() {
+    setPosting(true)
+    try {
+      let formdata = new FormData();
+      formdata.append("description", description)
+      if (backendImage) {
+        formdata.append("image", backendImage)
+      }
+      console.log(serverUrl)
+      
+      let result = await axios.post(serverUrl+"/api/post/create", formdata, { withCredentials: true })
+      console.log(result)
+      setPosting(false)
+      setdescription("");
+      setBackendImage("")
+
+      setCreatePostBox(false)
+
+
+    } catch (error) {
+      console.log("------------------------------------")
+      console.log(error.response)
+      console.log(error.request)
+      console.log(error.message)
+      console.log("------------------------------------")
+
+    }
+  }
+
 
   return (<div>
     {edit && <EditProfile />}
@@ -36,6 +71,8 @@ function Home() {
     <div className='w-full min-h-[100vh] bg-[#e7e6df] pt-[80px] flex items-start justify-center gap-[20px]  px-[20px] flex-col lg:flex-row'>
 
       <Nav />
+
+
       <div className=' w-full lg:w-[25%] min-h-[100px] bg-white shadow-lg rounded-lg p-[10px] relative' >
         {/* -------------left div------------- */}
         <div className='w-[100%] h-[150px] bg-gray-500 rounded overflow-hidden items-center justify-center relative cursor-pointer' onClick={() => { setEdit(true) }}>
@@ -78,15 +115,21 @@ function Home() {
 
 
       </div>
+
+
+
+
+
       {/* ---------------hidden input for weilding image for post */}
       <input type='file' accept='image/*' hidden ref={image} onChange={handleImage} />
       {/* ---------------hidden input for weilding image for post */}
 
+
       {/* -----------------create a post card----------------------------------------------------------------------------------------------------------------------- */}
-      {createPost && <div className='fixed inset-0 bg-black/60  z-[50] w-full h-full flex items-center justify-center'>
+      {createPostBox && <div className='fixed inset-0 bg-black/60  z-[50] w-full h-full flex items-center justify-center'>
         <div className='relative w-[400px] max-h-[90vh] bg-white z-[100] rounded-lg p-[10px] flex flex-col gap-[10px]'>
           <RxCrossCircled className="absolute right-[5px] top-[5px] w-[20px] h-[20px] text-gray-600 cursor-pointer " onClick={() => {
-            setCreatePost(false)
+            setCreatePostBox(false)
             setFrontendImage("")
           }} />
           {/* ---------header-------- */}
@@ -100,15 +143,15 @@ function Home() {
           </div>
           {/* /-----scrollable content---- */}
           <div className='flex flex-col gap-[10px] overflow-y-auto'>
-            <textarea className={`w-full ${frontendImage ? "h-[80px]" : "h-[320px]"} resize-none outline-none px-[10px]`} placeholder='What is on you mind..?'></textarea>
-            {frontendImage && (<img src={frontendImage} alt="preview" className='w-full h-auto object-cover' />)}
+            <textarea className={`w-full ${frontendImage ? " h-[80px]" : "h-[320px]"} resize-none outline-none px-[10px]`} value={description} placeholder='What is on you mind..?' onChange={(e)=>setdescription(e.target.value)}></textarea>
+            {frontendImage && (<img src={frontendImage} alt="preview" className='w-full h-auto object-cover rounded-lg  overflow-y-auto' />)}
           </div>
           {/* ----------footer------- */}
           <div className='flex flex-col gap-[10px] mt-auto pt-[10px]'>
             <FaRegImage className="cursor-pointer" onClick={() => image.current.click()} />
             <div className='w-full h-[1px] bg-black '></div>
             <div className='flex justify-end'>
-              <button className='w-[90px] h-[45px] rounded-full shadow-xl bg-blue-400 text-white flex justify-center items-center gap-[10px] hover:bg-blue-300'>Post</button>
+              <button className="w-[90px] h-[45px] rounded-full shadow-xl bg-blue-400 text-white flex justify-center items-center gap-[10px] hover:bg-blue-300" onClick={handleUploadPost} disabled={posting}>{posting?"posting...":"POST"}</button>
             </div>
 
 
@@ -116,23 +159,30 @@ function Home() {
         </div>
       </div>}
       {/* ----------------- end of create a post card------------------------------------------------------------------------------------------------------------------------------- */}
+ 
 
 
-      <div className=' w-full lg:w-[50%] min-h-[100px] bg-white shadow-lg relative rounded-xl'>
+
+      <div className=' w-full lg:w-[50%] min-h-[100px] bg-[#e7e6df]  relative rounded-xl flex flex-col gap-[20px] '>
         {/* -------------middle div------------- */}
-        <div className='absolute w-full h-full flex flex-row items-center justify-center gap-[40px] px-[100px] overflow-hidden rounded-xl'>
-          <div className=' w-[70px] h-[70px] shrink-0 bg-yellow-400 rounded-full overflow-hidden flex items-center justify-center cursor-pointer'>
+        <div className=' w-full flex flex-row py-[20px] shadow-lg bg-white items-center justify-center gap-[40px] px-[100px] overflow-hidden rounded-xl'>
+          <div className=' w-[70px] h-[70px] shrink-0  rounded-full overflow-hidden flex items-center justify-center cursor-pointer'>
             <img src={userData.profileImage || userdp2} className='h-full w-full bg-transparent object-cover'></img>
           </div>
           <button
-            className='flex-1 h-[40px] rounded-full border-2 border-blue-400 text-blue-400 flex justify-start px-[10px]  gap-[10px]  items-center hover:bg-gray-200' onClick={() => setCreatePost(true)}
-          >Create a Post
+            className='flex-1 min-w-0 h-[40px]  rounded-full border-2 border-blue-400 text-blue-400 flex items-center justify-center px-4  hover:bg-gray-200 overflow-hidden' onClick={() => setCreatePostBox(true)}
+          ><span className='truncate whitespace-nowrap'> Create a Post</span>
+
           </button>
         </div>
-
+        { postData && postData.map((post,index)=>(<Post key={index} id={post._id} author={post.author} likes={post.likes} comments={post.comments} description={post.description} image={post.image} createdAt={post.createdAt} />))}
       </div>
 
-      <div className=' w-full lg:w-[25%] min-h-[200px] bg-white shadow-lg'>
+
+
+
+
+      <div className=' w-full lg:w-[25%] min-h-[200px] bg-white shadow-lg rounded-lg'>
         {/* ---------------right div-------------- */}
 
 

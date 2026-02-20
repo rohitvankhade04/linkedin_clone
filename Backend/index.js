@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import userRouter from "./routes/user.routes.js";
 import postRouter from "./routes/post.routes.js";
+
 dotenv.config();
 app.use(express.json());
 app.use(cookieParser())
@@ -17,7 +18,7 @@ app.use(cors({
 let port=process.env.PORT;
 app.use("/api/auth",authRouter)
 app.use("/api/user",userRouter)
-app.use("/api/posts",postRouter)
+app.use("/api/post",postRouter)
 
 
 
