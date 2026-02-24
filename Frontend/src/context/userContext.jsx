@@ -33,7 +33,6 @@ function UserContext({ children }) {
       console.log("------ALL POSTS----")
       console.log(result)
       console.log("--------------------")
-
       setPostData(result.data)
     } catch (error) {
       console.error("Populate failure →", error);
@@ -42,8 +41,9 @@ function UserContext({ children }) {
   }
 
     useEffect(() => {
-      getCurrentUser()
       getPost()
+      getCurrentUser()
+
     }, [])
 
     const value = { userData, setUserData, edit, setEdit,postData,setPostData,getPost }

@@ -27,7 +27,7 @@ function Login() {
       },{withCredentials:true})
       console.log(result)
       navigate("/")
-      setUserData(result)
+      setUserData(result.data)
 
       setLoading((e)=>!e);
       setError("");

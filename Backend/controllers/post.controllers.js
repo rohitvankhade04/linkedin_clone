@@ -30,6 +30,7 @@ export const getPost = async (req, res) => {
     try {
         const post = await Post.find()
             .populate("author", "firstName lastName userName headline profileImage")
+            .populate("comments.user", "firstName lastName profileImage")
             .sort({ createdAt: -1 })
         return res.status(200).json(post)
     } catch (error) {
