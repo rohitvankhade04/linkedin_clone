@@ -9,9 +9,9 @@ export const initSocket = (server) => {
         }
     });
     io.on("connection", (socket) => {
-        console.log("user connected", socket.id);
+        console.log("user/socket connected", socket.id);
         socket.on("disconnect", () => {
-            console.log("socket disconnected", socket.id);
+            console.log("user/socket disconnected", socket.id);
         })
     })
 }

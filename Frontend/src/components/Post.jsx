@@ -9,8 +9,7 @@ import { BiSolidLike } from "react-icons/bi";
 import { IoSend } from "react-icons/io5";
 import { authDataContext } from "../context/AuthContext"
 import { userDataContext } from "../context/UserContext"
-import { io } from "socket.io-client";
-let socket = io("http://localhost:8000");
+import { socket } from "../socket.js"
 
 function Post({ id, author, likes, comments, description, image, createdAt }) {
   let [more, setMore] = useState(false);
@@ -58,8 +57,16 @@ function Post({ id, author, likes, comments, description, image, createdAt }) {
 
     socket.on("likeUpdated", handleLikeUpdate);
 
+    const handleCommentUpdate = ({ postId, comm }) => {
+      if (postId.toString() === id.toString()) {
+        setArrayOfComments(comm);
+      }
+    };
 
-    return () => { socket.off("likeUpdated",handleLikeUpdate) }
+    socket.on("commentUpdated", handleCommentUpdate);
+
+
+    return () => { socket.off("likeUpdated", handleLikeUpdate),socket.off("commentUpdated", handleCommentUpdate) }
   }, [id])
   useEffect(() => { getPost() }, [arrayOfLikes, setArrayOfLikes, arrayOfComments, setArrayOfComments])
 
