@@ -1,4 +1,5 @@
 import uploadOnCloudinary from "../config/uploadCloudinary.js"
+import { getIo } from "../socket/socket.js";
 import { Post } from "../models/postmodel.js";
 
 export const createPost = async (req, res) => {
@@ -19,9 +20,9 @@ export const createPost = async (req, res) => {
                 description,
             })
         }
-        return res.status(200).json( { message: "post is created and uploaded in database" })
+        return res.status(200).json({ message: "post is created and uploaded in database" })
     } catch (error) {
-        return res.status(201).json('create post error:${error}')
+        return res.status(201).json({ message: `create post error:${error}` })
 
     }
 }
@@ -41,7 +42,7 @@ export const getPost = async (req, res) => {
 
 }
 
-export const like = async (req, res)=>{
+export const like = async (req, res) => {
     let userId = req.userId;
     let postId = req.params.id;
     console.log("Received postId:", postId);
@@ -51,21 +52,33 @@ export const like = async (req, res)=>{
         if (!post) {
             return res.status(400).json({ message: "post not found" })
         }
-        if (post.likes.includes(userId)) {
-            post.likes=post.likes.filter((id) => id != userId)
+        console.log("likes array:", post.likes)
+        console.log("userId:", userId)
+        const alreadyLiked = post.likes.some(
+            (id) => id.toString() === userId
+        )
 
+        if (alreadyLiked) {
+            post.likes = post.likes.filter(
+                (id) => id.toString() !== userId
+            )
         } else {
             post.likes.push(userId)
         }
-
         await post.save()
+
+        console.log("11111111111111111111111111111")
+        console.log("io instance:", getIo())
+        getIo().emit("likeUpdated", { postId, likes: post.likes })
+        console.log("0000000000000000000000000000")
+
         return res.status(200).json(post)
 
     } catch (error) {
         return res.status(500).json({ message: "error of liking the post at like controller in like route" })
     }
 }
-export const comment = async (req, res)=>{
+export const comment = async (req, res) => {
     let userId = req.userId;
     let { content } = req.body
     let postId = req.params.id;
@@ -77,7 +90,7 @@ export const comment = async (req, res)=>{
         const post = await Post.findByIdAndUpdate(
             postId, { $push: { comments: { user: userId, content } } },
             { new: true })
-            .populate("comments.user", "firstName lastName ProfileImage")
+            .populate("comments.user", "firstName lastName profileImage")
 
         if (!post) {
             return res.status(404).json({ message: "Post not found" });

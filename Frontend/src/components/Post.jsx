@@ -9,7 +9,8 @@ import { BiSolidLike } from "react-icons/bi";
 import { IoSend } from "react-icons/io5";
 import { authDataContext } from "../context/AuthContext"
 import { userDataContext } from "../context/UserContext"
-
+import { io } from "socket.io-client";
+let socket = io("http://localhost:8000");
 
 function Post({ id, author, likes, comments, description, image, createdAt }) {
   let [more, setMore] = useState(false);
@@ -48,6 +49,18 @@ function Post({ id, author, likes, comments, description, image, createdAt }) {
     }
 
   }
+  useEffect(() => {
+    const handleLikeUpdate = ({ postId, likes }) => {
+      if (postId.toString() === id.toString()) {
+        setArrayOfLikes(likes);
+      }
+    };
+
+    socket.on("likeUpdated", handleLikeUpdate);
+
+
+    return () => { socket.off("likeUpdated",handleLikeUpdate) }
+  }, [id])
   useEffect(() => { getPost() }, [arrayOfLikes, setArrayOfLikes, arrayOfComments, setArrayOfComments])
 
   return (
@@ -86,7 +99,7 @@ function Post({ id, author, likes, comments, description, image, createdAt }) {
 
       <div className="flex flex-row items-center justify-between p-[10px] ">
         <div className="flex flex-row items-center" ><BiLike className="text-blue-400" /><div><span className="text-[18px] ">{arrayOfLikes.length}</span></div></div>
-        <div onClick={() => { setShowComments(c => !c)}}  className="cursor-pointer"><span>{arrayOfComments.length} comments</span></div>
+        <div onClick={() => { setShowComments(c => !c) }} className="cursor-pointer"><span>{arrayOfComments.length} comments</span></div>
       </div>
 
       <div className="w-full border-[1px]"></div>
